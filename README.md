@@ -7,4 +7,4 @@ Copiar en la pestaña `Script` de Blender el contenido del archivo mencionado. L
 
 El resultado de la animación se puede ver en la pestaña `Animation`, donde se pueden apreciar cada fotograma a medida que avanza el cursor. Se deja al usuario que cambie el punto de vista del `Viewport`.
 
-
+`brazo_bpy.py` permite visualizar los brazos de una extremidad mecánica como flechas.

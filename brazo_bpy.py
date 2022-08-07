@@ -37,12 +37,12 @@ def args(kwargs, arg, default=None):
     ''''Si en `kwargs` no está la llave la busca en `defecto`'''
     if arg in kwargs:
         if kwargs[arg] is not None:
-            print('args1', kwargs[arg])
+            #print('args1', kwargs[arg])
             return kwargs[arg]
     if arg in defecto:
         if default is None:
             default = arg
-        print('args2', defecto[default])
+        #print('args2', defecto[default])
         return defecto[default]
     print(f'No encontró "{arg}" en {kwargs}')
     print('args3')
@@ -57,10 +57,10 @@ class Objetos:
     def __init__(self, con=None, **kwargs):
         kwargs['con'] = con
         self.kwargs = kwargs
-        print('objetos 1', kwargs)
+        #print('objetos 1', kwargs)
         self.listado = []
         self.__crea_objetos__(**kwargs)  # objs no devuelve nada
-        print('objetos 2', self)
+        #print('objetos 2', self)
         self.en(xyz(args(kwargs, 'en')))
         nombres=args(kwargs, 'llamad').strip().split()
         for nombre in nombres:
@@ -105,10 +105,11 @@ class Objeto:
         kwargs['con'] = con
         self.kwargs = kwargs
         de = args(kwargs, 'de') 
-        llamad = args(kwargs, 'llamad') 
-        print('objeto 1', kwargs)
+        llamad = 'bye_'+args(kwargs, 'llamad') 
+        kwargs['llamad']=llamad
+        #print('objeto 1', kwargs)
         obj = self.__crea_objeto__(**kwargs)
-        print('objeto 2', obj)
+        #print('objeto 2', obj)
         self.objeto_bpy = obj
         self.en(xyz(args(kwargs, 'en')))
         de_val = 'Material_'+llamad
@@ -125,9 +126,9 @@ class Objeto:
         mat.node_tree.nodes["Principled BSDF"].inputs['Emission'].default_value = colores[de]
         mat.node_tree.nodes["Principled BSDF"].inputs['Emission Strength'].default_value = args(
             kwargs, 'brillo')
-        if 'invisible_visibe' in kwargs:
+        if 'invisible_visible' in kwargs:
             valor=False
-            for frame in kwargs['invisible_visibe']:
+            for frame in kwargs['invisible_visible']:
                     self.keyframe_insert(self.visible(valor), frame=frame)
                     valor =  not valor
         nombres=args(kwargs, 'llamad').strip().split()
@@ -240,14 +241,14 @@ class Flecha(Linea):
         norm9=0.9*norm
         if normxy==0:
             c0=0
-            b0= -np.pi/2 if z>0 else +np.pi/2
+            b0= -np.pi/2 if z>0 else np.pi/2
         else:
             c0=np.arccos(x/normxy)
             c0=c0  if y>0 else 2*np.pi-c0
             b0=np.arccos(normxy/norm)
             b0 = -b0 if z>0 else b0
         a1,b1,c1=kwargs.pop('gira',(0,0,0))
-        print('Flecha',x,y,z,':',b0,c0,a1,b1,c1,':',normxy,norm)
+        #print('Flecha',x,y,z,':',b0,c0,a1,b1,c1,':',normxy,norm)
         vertices = [[0]*3, (norm,0,0), (norm9,norm1,0), (norm9,-norm1,0),  (norm,0,0),(norm9,0, norm1), (norm9,0,-norm1),  (norm,0,0)]
         super().__init__(con=vertices,gira=(a1,b0+b1,c0+c1), **kwargs)
         
@@ -285,7 +286,7 @@ class Flechas_nparray(Objetos):
             de = defecto['algunos_colores']
 
         for i in range(con.shape[1]):
-            print('Flechas_nparray',i)
+            #print('Flechas_nparray',i)
             i_de = i % len(de)
             kwargs['llamad'] = llamad+'_fle_'+str(i)
             kwargs['de'] = de[i_de]
@@ -536,7 +537,7 @@ class Plano_ort_punto(Objetos):
     def __init__(self, con=None, **kwargs):
         '''
         `con`: vector perpendicular al plano
-        `con`  y `en` Estan en R3  
+        `con`  y `en` Están en R3  
         '''
         super().__init__(con=con, **kwargs)
 
@@ -645,63 +646,31 @@ class Ejes(Objetos):
                                 llamad=llamad+'z', de='blue', ancho_linea=ancho_linea, **kwargs))
         kwargs['llamad'] = llamad
 
-# class TrMat(Objetos):  # No funciona
-#     def __init__(self, con=None, **kwargs):
-#         super().__init__(con=con, **kwargs)
-
-#     def __crea_objetos__(self, **kwargs):
-#         # con : tiene las dimensdiones del dominio y del codominio
-#         if 'con' in kwargs:
-#             if kwargs['con']:
-#                 con = kwargs['con']
-#             else:
-#                 con = 3, 3
-#         else:
-#             con = 3, 3
-
-#         if 'llamad' in kwargs:
-#             llamad = kwargs['llamad']+'_TrMat'
-#         else:
-#             llamad = 'TrMatr_'
-
-#         ejex0, ejey0, ejez0 = defecto['ejes_0']
-#         ejex1, ejey1, ejez1 = defecto['ejes_1']
-#         centro_dominio = np.array((ejex0-1, 0, 0))
-#         centro_codominio = np.array((ejex1+1, 0, 0))
-#         m, n = con  # A.shape
-#         print('TrMatr', m, n)
-#         kwargs.pop('con', None)
-#         if n == 2:
-#             self.listado.append(
-#                 Ejes('xy', en=centro_dominio, llamad='dominio', **kwargs))
-#         else:
-#             self.listado.append(
-#                 Ejes('xyz', en=centro_dominio, llamad='dominio', **kwargs))
-#         if m == 2:
-#             self.listado.append(
-#                 Ejes('xy', en=centro_codominio, llamad='codominio', **kwargs))
-#         else:
-#             self.listado.append(
-#                 Ejes('xyz', en=centro_codominio, llamad='codominio', **kwargs))
-#         kwargs['llamad'] = llamad
-#         self.dom = centro_dominio
-#         self.cod = centro_codominio
 
 
 if __name__ == '__main__':
+    print('##############################################################################')
+
+
+
     # Lee los nombres de los colores
     with open('/gm2022_0404/Prog_Apli/PWM/colors.json') as json_file:
         colores = json.load(json_file)
 
     # Borra los objetos anteriores
-    for o in bpy.context.scene.objects:
+    print('bpy.context.scene.objects',bpy.context.scene.objects.keys())
+    for llamad in bpy.context.scene.objects.keys():
+        o=bpy.context.scene.objects[llamad]
         o.hide_render = False
         o.hide_viewport = False
-        if o.type in ('MESH', 'CURVE', 'TEXT', 'SURFACE', 'FONT'):
+        if llamad[:4]=='bye_':
+        #if o.type in ('MESH', 'CURVE', 'TEXT', 'SURFACE', 'FONT'):
             o.select_set(True)
         else:
             o.select_set(False)
     bpy.ops.object.delete()
+
+    # Selecciona Render en el Viewport
     bpy.ops.wm.save_as_mainfile(filepath=bpy.data.filepath)
     bpy.ops.wm.open_mainfile(filepath=bpy.data.filepath)
     for window in bpy.context.window_manager.windows:
@@ -710,6 +679,7 @@ if __name__ == '__main__':
                 for space in area.spaces:
                     if space.type == 'VIEW_3D':
                         space.shading.type = 'RENDERED'
+
     bpy.context.scene.eevee.use_bloom = True
 
     # Variable para ubicar los renglones en el eje z
@@ -731,7 +701,7 @@ if __name__ == '__main__':
     
 
 ######################################################################
-    # Matriz de rotación
+    # Matriz de rotación en 2D
     def mat_rot_grad(a=0):
         a=a/180*np.pi
         return np.array([
@@ -739,41 +709,8 @@ if __name__ == '__main__':
             [np.sin(a),  np.cos(a)]
         ])
 
-#################################################################################################    
-#    # Rotacióon en 2D
-    #print(mat_rot())
-#    Ejes('xy',  llamad='Ejes_2D', invisible_visibe=(0,frame_actual))
-#    v=np.array([[1],[0]])
-#    
-#    A=mat_rot_grad(45)
+    #Matrices de rotacion en 3D usando lo ángulos de Euler
 
-#    dura(1)
-#    Flecha(v,  llamad='brazo1_2D_home', de='yellow', invisible_visibe=(0,frame_actual))
-#    dura(1)
-#    Renglon((
-#        Matriz(A, llamad='rot2x2_A',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        Matriz(('x','y'), llamad='rot2x2_x',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        '=',
-#        Matriz(((
-#            "%.2f" % A[0,0])+'x + '+("%.2f" % A[0,1])+'y'
-#            ,("%.2f" % A[1,0])+'x + '+("%.2f" % A[1,1])+'y'), 
-#          llamad='rot2x2_Ax',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#    ), llamad='rot2x2', en=(-1, -2, 0),  invisible_visibe=(0,frame_actual,frame_siguiente))
-#    Flecha(A@v,  llamad='brazo1_2D_rotado', de='purple', invisible_visibe=(0,frame_actual,frame_siguiente))
-#    dura(1)
-#    obj0('brazo1_2D_home').keyframe_insert(obj0('brazo1_2D_home').visible(False), frame=frame_actual)
-#    obj0('Ejes_2D').keyframe_insert(obj0('Ejes_2D').visible(False), frame=frame_actual)
-#    #obj0('Flecha2').keyframe_insert(obj0('Flecha2').visible(False), frame=frame_actual)
-#    #dura(1)
-
-
-##################################################################################################3
-###############################################################################################
-    #Rotacion en 3D, angulos de Euler
-
-    #Ejes('xyz',  llamad='Ejes', invisible_visibe=(0,frame_actual))
-
-    #A1=mat_rot_grad(60)
     # Rotacióon en el plano xy
     def Rxy(ang):
         A1=mat_rot_grad(ang)
@@ -798,144 +735,59 @@ if __name__ == '__main__':
         A1=mat_rot_grad(ang)
         return np.array([
         [1, 0,       0      ],
-        [0, A1[0,0], A1[0,1]],
-        [0, A1[1,0], A1[1,1]],
+        [0, A1[0,0], -A1[0,1]],
+        [0, -A1[1,0], A1[1,1]],
     ])
-
-    #A=Rxy(60)
-    #A=Rxz(80) @ Rxy(10)
-    #A=Rxz(60)
-
-
-
-    B=np.array([
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 0, 1],
-    ])
-
-#####################################################################################
-#Rotacion en 3D, angulos de Euler
-
-#    dura(1)
-#    Flechas_nparray(B,  llamad='brazo1_rot_home', de=('red','green','blue'),invisible_visibe=(0,frame_actual))
-#    dura(1)
-#    #Matriz(A, llamad='A1', en=(-1, -2, 0), invisible_visibe=(0,frame_actual,frame_siguiente))
-#    Renglon((
-#        Matriz(A, llamad='rot3x3_A',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        Matriz(('x','y','z'), llamad='rot2x2_x',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        '=',
-#        Matriz((
-#            n2s( A[0,0])+'x + '+n2s(A[0,1])+'y + '+n2s(A[0,2])+'z',
-#            n2s( A[1,0])+'x + '+n2s(A[1,1])+'y + '+n2s(A[1,2])+'z',
-#            n2s( A[2,0])+'x + '+n2s(A[2,1])+'y + '+n2s(A[2,2])+'z',
-#            ), 
-#          llamad='rot3x3_Ax',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#    ), llamad='rot3x3', en=(-3, -2, 0),  invisible_visibe=(0,frame_actual,frame_siguiente))
-#    Flechas_nparray(A@B,   de=('coral','forestgreen','cyan'),llamad='brazo1', invisible_visibe=(0,frame_actual,frame_siguiente))
-#    dura(1)
-#    obj0('brazo1_rot_home').keyframe_insert(obj0('brazo1_rot_home').visible(False), frame=frame_actual)
-#    #obj0('Flecha2').keyframe_insert(obj0('Flecha2').visible(False), frame=frame_actual)
-
-
-##############################################################################
-
-
-
-## Traslación 
-#    v=np.array([1,2,3])
-#    
-#    
-
-#    dura(1)
-#    Flechas_nparray(B,  llamad='brazo1_tr_home', de=('red','green','blue'),invisible_visibe=(0,frame_actual))
-#    dura(1)
-#    #Matriz(A, llamad='A1', en=(-1, -2, 0), invisible_visibe=(0,frame_actual,frame_siguiente))
-#    Flecha(v,  llamad='desp', invisible_visibe=(0,frame_actual))
-#    dura(1)
-#    Renglon((
-#        Matriz(v, llamad='rot3x3_A',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        '+',
-#        Matriz(('x','y','z'), llamad='rot2x2_x',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        '=',
-#        Matriz((
-#            n2s( v[0])+' + x',
-#            n2s( v[1])+' + y',
-#            n2s( v[2])+' + z',
-#            ), 
-#          llamad='rot3x3_Ax',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#    ), llamad='rot3x3', en=(-3, -2, 0),  invisible_visibe=(0,frame_actual,frame_siguiente))
-#    
-#    Flechas_nparray(B, en=v,   de=('coral','forestgreen','cyan'),llamad='brazo1', invisible_visibe=(0,frame_actual,frame_siguiente))
-#    dura(1)
-#    obj0('brazo1_tr_home').keyframe_insert(obj0('brazo1_tr_home').visible(False), frame=frame_actual)
-#    #obj0('Flecha2').keyframe_insert(obj0('Flecha2').visible(False), frame=frame_actual)
-
-#####################################################################################
-#Rotacion en 3D  y luego una traslación 
-#    v=np.array([1,2,3])
-#    A=Rxz(45)# @ Rxy(10)
-
-#    dura(1)
-#    Flechas_nparray(B,  llamad='brazo1_rot_home', de=('red','green','blue'),invisible_visibe=(0,frame_actual))
-#    dura(1)
-#    #Matriz(A, llamad='A1', en=(-1, -2, 0), invisible_visibe=(0,frame_actual,frame_siguiente))
-#    Renglon((
-#        Matriz(A, llamad='rot3x3_A',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        Matriz(('x','y','z'), llamad='rot2x2_x',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        '+',
-#        Matriz(v, llamad='trasl_v',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#        '=',
-#        Matriz((
-#            n2s( A[0,0])+'x + '+n2s(A[0,1])+'y + '+n2s(A[0,2])+'z +'+n2s(v[0]),
-#            n2s( A[1,0])+'x + '+n2s(A[1,1])+'y + '+n2s(A[1,2])+'z +'+n2s(v[1]),
-#            n2s( A[2,0])+'x + '+n2s(A[2,1])+'y + '+n2s(A[2,2])+'z +'+n2s(v[2]),
-#            ), 
-#          llamad='rot3x3_Ax',  invisible_visibe=(0,frame_actual,frame_siguiente)),
-#    ), llamad='rot3x3', en=(-3, -2, 0),  invisible_visibe=(0,frame_actual,frame_siguiente))
-#    Flecha(v,  llamad='tra', invisible_visibe=(0,frame_actual,frame_siguiente))
-#    Flechas_nparray(A@B,  en=v, de=('coral','forestgreen','cyan'),llamad='brazo1', invisible_visibe=(0,frame_actual,frame_siguiente))
-#    dura(1)
-#    obj0('brazo1_rot_home').keyframe_insert(obj0('brazo1_rot_home').visible(False), frame=frame_actual)
-#    #obj0('Flecha2').keyframe_insert(obj0('Flecha2').visible(False), frame=frame_actual)
-
-
-
-
-
-##############################################################################
 
 
 
 #Brazos 
-
-    primer_angulo = Rxz(-50)
-    primer_brazo=np.array([1,0,0])
-    segundo_angulo = Ryz(-50) @ primer_angulo
+    
+    # Se definen los ángulos en grados
+    ang_1 = -70
+    ang_2 = 29
+    ang_3 = -60
+    
+    # Se define la ubicación original de los brazos
+    primer_brazo=np.array([0,0,1])
     segundo_brazo=np.array([1,0,0])
-    tercer_angulo = Rxy(-40) @ segundo_angulo
     tercer_brazo=np.array([1,0,0])
+
+    # Se calculan las matrices de roración
+    primera_rotacion = Rxy(ang_1)
+    segunda_rotacion = primera_rotacion @ Rxz(ang_2)  
+    tercera_rotacion = segunda_rotacion @ Rxz(ang_3) 
     
+    # Se calcula la rotación de los brazos
+    primer_brazo_gir  = primera_rotacion @ primer_brazo 
+    segundo_brazo_gir = segunda_rotacion @ segundo_brazo
+    tercer_brazo_gir  = tercera_rotacion  @ tercer_brazo
     
-    primer_brazo_gir  = primer_angulo @ primer_brazo 
-    segundo_brazo_gir = segundo_angulo @ segundo_brazo
-    tercer_brazo_gir  = tercer_angulo  @ tercer_brazo
-    
+    # Se calcula la ubicación de los codos
     primer_codo=primer_brazo_gir
     segundo_codo=segundo_brazo_gir + primer_codo
     tercer_codo=tercer_brazo_gir + segundo_codo 
     
-    Flecha(primer_brazo_gir, en=(0,0,0),  llamad='primer_brazo',invisible_visibe=(0,frame_actual))
-    Flecha(segundo_brazo_gir, en=primer_codo,  llamad='segundo_brazo',invisible_visibe=(0,frame_actual))
-    Flecha(tercer_brazo_gir, en=segundo_codo,  llamad='tercer_brazo',invisible_visibe=(0,frame_actual))
+    # Se grafican las flechas
+    Flecha(primer_brazo_gir, en=(0,0,0),  llamad='primer_brazo')
+    Flecha(segundo_brazo_gir, en=primer_codo,  llamad='segundo_brazo')
+    Flecha(tercer_brazo_gir, en=segundo_codo,  llamad='tercer_brazo')
 
+    # Se imprime la ubicación final del brazo
     print('tercer_codo',tercer_codo)
 
-    if ( (1<tercer_codo[0] and tercer_codo[0]>3)
-        and (-1<tercer_codo[1] and tercer_codo[1]>1)
-        and (0<tercer_codo[2] and tercer_codo[2]>5) ) :
+
+    # Se imprimen alertas cuando el brazo está en determinada zona    
+    if ( (-1<tercer_codo[0] and tercer_codo[0]<1)         # Compara rangos en el eje x
+        and (-3.5<tercer_codo[1] and tercer_codo[1]<-1.5) # Compara rangos en el eje y
+        and (-1<tercer_codo[2] and tercer_codo[2]<1) ) :  # Compara rangos en el eje z
         print ('Está en la zona 1') 
 
+
+#    if ( (-1<tercer_codo[0] and tercer_codo[0]<1)
+#        and (-3.5<tercer_codo[1] and tercer_codo[1]<-1.5)
+#        and (-1<tercer_codo[2] and tercer_codo[2]<1) ) :
+#        print ('Está en la zona 1') 
 
 
 
